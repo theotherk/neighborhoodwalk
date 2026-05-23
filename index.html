@@ -38,11 +38,11 @@
     position: fixed; left: 12px; top: 50%; transform: translateY(-50%);
     display: flex; flex-direction: column; gap: 12px;
     font: 33px/1 monospace; color: rgba(255,255,255,0.35);
-    pointer-events: none; z-index: 10;
+    z-index: 10;
   }
   #keymap div {
     display: flex; align-items: center; gap: 8px;
-    transition: color 0.15s;
+    transition: color 0.15s; cursor: pointer;
   }
   #keymap .active { color: rgba(255,255,255,0.7); }
   #keymap .red { color: rgba(255,100,80,0.7); }
@@ -50,13 +50,13 @@
 </head>
 <body>
 <div id="keymap">
-  <div id="k-s">s</div>
-  <div id="k-plus">+</div>
-  <div id="k-minus">-</div>
-  <div id="k-eq">=</div>
-  <div id="k-a">a</div>
-  <div id="k-d">d</div>
-  <div id="k-m">m</div>
+  <div id="k-s" title="Sol">s</div>
+  <div id="k-plus" title="Faster">+</div>
+  <div id="k-minus" title="Slower">-</div>
+  <div id="k-eq" title="Cruising Speed">=</div>
+  <div id="k-a" title="Alternate Rotation">a</div>
+  <div id="k-d" title="Distant Neighbor">d</div>
+  <div id="k-m" title="Mute">m</div>
 </div>
 <div id="star-timeline"></div>
 <div id="tooltip"></div>
@@ -39536,6 +39536,15 @@ document.addEventListener('keyup', (e) => {
 
 window.addEventListener('blur', () => {
   ['k-plus', 'k-minus', 'k-eq', 'k-s'].forEach(id => document.getElementById(id).classList.remove('active'));
+});
+
+document.getElementById('keymap').addEventListener('click', (e) => {
+  const key = ({ 'k-s':'s', 'k-plus':'+', 'k-minus':'-', 'k-eq':'=', 'k-a':'a', 'k-d':'d', 'k-m':'m' })[e.target.id];
+  if (!key) return;
+  document.dispatchEvent(new KeyboardEvent('keydown', { key }));
+  if ('+-=s'.includes(key)) {
+    setTimeout(() => document.dispatchEvent(new KeyboardEvent('keyup', { key })), 100);
+  }
 });
 
 function animate() {
