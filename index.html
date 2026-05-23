@@ -39169,35 +39169,45 @@ const animLines = [];
 const tooltipEl = document.getElementById('tooltip');
 let tooltipTimer = null;
 const timelineEl = document.getElementById('star-timeline');
-const NAME_SLOTS = 8;
+let nameSlotCount;
 const nameSlotEls = [];
 const nameSlotStates = [];
 
-for (let i = 0; i < NAME_SLOTS; i++) {
-  const span = document.createElement('span');
-  timelineEl.appendChild(span);
-  nameSlotEls.push(span);
-  nameSlotStates.push(null);
+function buildTimeline() {
+  const count = Math.max(1, Math.floor((innerWidth - 40) / 128));
+  if (count === nameSlotCount) return;
+  nameSlotCount = count;
+  timelineEl.innerHTML = '';
+  nameSlotEls.length = 0;
+  nameSlotStates.length = 0;
+  for (let i = 0; i < nameSlotCount; i++) {
+    const span = document.createElement('span');
+    timelineEl.appendChild(span);
+    nameSlotEls.push(span);
+    nameSlotStates.push(null);
+  }
 }
+buildTimeline();
+window.addEventListener('resize', buildTimeline);
 
 function addNameDisplay(star, duration) {
   const now = performance.now();
   const name = starName(star);
   const minDuration = Math.max(duration, 4000);
-  for (let i = 0; i < NAME_SLOTS; i++) {
+  for (let i = 0; i < nameSlotCount; i++) {
     if (nameSlotEls[i].textContent === name) {
       nameSlotStates[i] = { start: now, duration: minDuration };
       return;
     }
   }
   let slot = -1;
-  for (let i = 0; i < NAME_SLOTS; i++) {
+  for (let i = 0; i < nameSlotCount; i++) {
     const s = nameSlotStates[i];
     if (!s || now - s.start >= s.duration) { slot = i; break; }
   }
   if (slot === -1) {
     let oldest = 0;
-    for (let i = 1; i < NAME_SLOTS; i++) {
+    for (let i = 1; i < nameSlotCount; i++) {
       if (now - nameSlotStates[i].start > now - nameSlotStates[oldest].start) oldest = i;
     }
     slot = oldest;
@@ -39375,7 +39385,7 @@ function updateLines() {
 
 function updateNameDisplays() {
   const now = performance.now();
-  for (let i = 0; i < NAME_SLOTS; i++) {
+  for (let i = 0; i < nameSlotCount; i++) {
     const s = nameSlotStates[i];
     if (!s) { nameSlotEls[i].style.opacity = 0; continue; }
     const elapsed = now - s.start;
