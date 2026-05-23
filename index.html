@@ -54,6 +54,7 @@
   <div id="k-plus" title="Faster">+</div>
   <div id="k-minus" title="Slower">-</div>
   <div id="k-eq" title="Cruising Speed">=</div>
+  <div id="k-r" title="Rotate" class="active">r</div>
   <div id="k-a" title="Alternate Rotation">a</div>
   <div id="k-d" title="Distant Neighbor">d</div>
   <div id="k-m" title="Mute">m</div>
@@ -39449,15 +39450,6 @@ window.addEventListener('resize', () => {
   renderer.setSize(innerWidth, innerHeight);
 });
 
-document.addEventListener('dblclick', () => {
-  rotationPaused = !rotationPaused;
-  if (rotationPaused) {
-    controls.autoRotate = false;
-  } else if (!customRotateActive) {
-    controls.autoRotate = true;
-  }
-});
-
 document.addEventListener('keydown', (e) => {
   if (e.key === '+') {
     if (speedChangedThisStep) {
@@ -39495,6 +39487,15 @@ document.addEventListener('keydown', (e) => {
       customRotateAxis.set(Math.random() - 0.5, 1, Math.random() - 0.5).normalize();
       customRotateSpeed = 0.002 + Math.random() * 0.006;
     } else {
+      controls.autoRotate = true;
+    }
+  }
+  if (e.key === 'r') {
+    rotationPaused = !rotationPaused;
+    document.getElementById('k-r').classList.toggle('active', !rotationPaused);
+    if (rotationPaused) {
+      controls.autoRotate = false;
+    } else if (!customRotateActive) {
       controls.autoRotate = true;
     }
   }
@@ -39539,7 +39540,7 @@ window.addEventListener('blur', () => {
 });
 
 document.getElementById('keymap').addEventListener('click', (e) => {
-  const key = ({ 'k-s':'s', 'k-plus':'+', 'k-minus':'-', 'k-eq':'=', 'k-a':'a', 'k-d':'d', 'k-m':'m' })[e.target.id];
+  const key = ({ 'k-s':'s', 'k-plus':'+', 'k-minus':'-', 'k-eq':'=', 'k-a':'a', 'k-r':'r', 'k-d':'d', 'k-m':'m' })[e.target.id];
   if (!key) return;
   document.dispatchEvent(new KeyboardEvent('keydown', { key }));
   if ('+-=s'.includes(key)) {
